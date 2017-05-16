@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ws goodies</title>
+  </head>
+<body>
+<p>websockets for all</p>
+<script>
+  var ws = new WebSocket('wss://hej-node-karlpokus.c9users.io');
+  // ws.readyState
+
+  ws.onopen = function (e) {
+    ws.send("hi from client!");
+  };
+  
+  ws.onmessage = function (e) {
+    console.log(e.data);
+  }
+</script>
+</body>
+</html>
