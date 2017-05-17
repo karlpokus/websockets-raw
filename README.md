@@ -1,10 +1,14 @@
 # websockets-raw
-Fiddling with the websocket protocol. Quick and dirty. A work in progress.
+Fiddling with the websocket protocol. No dependencies. A work in progress.
+
+### api
+Eventemitter pattern for server and client i.e register listeners for event with `on` and `emit` events and pass data.
 
 # todos
 - [x] ws handshake (Note: the server handshake response requires an empty line in the end. Only 4+ hours debugging. Good times!)
-- [x] decode data frames from client 
+- [x] decode data frames from client
 - [x] encode data frames to client
+- [x] unified eventemitter pattern api
 
 # usage
 ```bash

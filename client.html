@@ -1,21 +1,62 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ws goodies</title>
+    <title>ws client</title>
   </head>
 <body>
 <p>websockets for all</p>
 <script>
-  var ws = new WebSocket('wss://hej-node-karlpokus.c9users.io');
-  // ws.readyState
-
-  ws.onopen = function (e) {
-    ws.send("hi from client!");
-  };
-  
-  ws.onmessage = function (e) {
-    console.log(e.data);
+  // ctor
+  function wsClient(url) {
+    this.router = {};
+    this.ws = new WebSocket(url);
+    this.ws.onopen = this._onopen.bind(this);
+    this.ws.onmessage = this._onmessage.bind(this);
   }
+
+  // internal cb for onopen
+  wsClient.prototype._onopen = function(e) {
+    if (this.router.connection) {
+      this.router.connection();
+    }
+  }
+
+  // internal cb for onmessage
+  wsClient.prototype._onmessage = function (e) {
+    var data = JSON.parse(e.data);
+
+    if (this.router[data.event]) {
+      this.router[data.event](data.payload); // already bound to ws in `on`
+    }
+  }
+
+  // store path and cb in router
+  wsClient.prototype.on = function(e, cb) {
+    this.router[e] = cb.bind(this);
+    return this;
+  }
+
+  // send msg to server
+  wsClient.prototype.emit = function(e, payload) {
+    this.ws.send(JSON.stringify({
+      event: e,
+      payload: payload
+    }));
+
+    return this;
+  }
+
+  // instance
+  var ws = new wsClient('ws://localhost:3000');
+  ws
+    .on('connection', function() {
+      console.log('client connected');
+
+      this.emit('clientCall', {msg: 'hi from client'});
+    })
+    .on('serverCall', function(data){
+      console.log(data);
+    })
 </script>
 </body>
 </html>
