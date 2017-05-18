@@ -6,15 +6,36 @@ const http = require('http'),
       sendClient = (req, res) => {
         fs.createReadStream('./client.html').pipe(res);
       },
-      ws = new wsServer();
+      ws = new wsServer(),
+      messages = [],
+      getUserlist = function(arr) {
+        return arr.map(socket => socket.user);
+      };
 
 ws
-  .on('clientCall', function(data, id){
-    console.log(data.msg);
-
-    this.replyOne(id, 'serverCall', {msg: 'hi from server'});
-    // this.replyAll(event, data);
+  .on('connection', function(data, socket){ // data is null
+    this.emit('log', `${socket.id} connected`);
+    this.replyOne(socket, 'initialData', {
+      userlist: getUserlist(this.connections),
+      messages: messages
+    });
   })
+  .on('log', function(...args){
+    console.log(args.join(' '));
+  })
+  .on('addMessage', function(data, socket) {
+    var payload = {
+      user: socket.user,
+      msg: data.msg
+    };
+
+    messages.push(payload);
+    this.replyAll('messageAdded', payload);
+  })
+  .on('updateUser', function(data, socket){
+    socket.user = data.user;
+    this.replyAll('userlist', {userlist: getUserlist(this.connections)});
+  });
 
 server
   .on('request', sendClient)

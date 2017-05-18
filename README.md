@@ -2,13 +2,22 @@
 Fiddling with the websocket protocol. No dependencies. A work in progress.
 
 ### api
-Eventemitter pattern for server and client i.e register listeners for event with `on` and `emit` events and pass data.
+Eventemitter pattern for server and client i.e register event listeners with `on` and `emit` them with data.
 
 # todos
 - [x] ws handshake (Note: the server handshake response requires an empty line in the end. Only 4+ hours debugging. Good times!)
 - [x] decode data frames from client
 - [x] encode data frames to client
 - [x] unified eventemitter pattern api
+- [x] vueJS client
+- [x] global log
+- [x] remove all app parts from lib
+- [x] userlist and messages on new connection
+- [x] addMessage
+- [x] updateUser
+- [ ] decode connection ended from client
+- [ ] monitor `socket.bufferSize`
+- [ ] consistent payloads
 
 # usage
 ```bash
