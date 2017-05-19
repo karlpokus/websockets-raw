@@ -15,7 +15,9 @@ Eventemitter pattern for server and client i.e register event listeners with `on
 - [x] userlist and messages on new connection
 - [x] addMessage
 - [x] updateUser
+- [ ] read up on heartbeats ping/pong
 - [ ] decode connection ended from client
+- [ ] handle connection close on client
 - [ ] monitor `socket.bufferSize`
 - [ ] consistent payloads
 
@@ -25,7 +27,8 @@ $ node server.js
 ```
 
 # refs
-- [good src on data frames](http://lucumr.pocoo.org/2012/9/24/websockets-101/)
+- [the websockets protocol rfc6455](https://tools.ietf.org/html/rfc6455)
+- [data frames for dummies](http://lucumr.pocoo.org/2012/9/24/websockets-101/)
 - js implementation of data frame encoding/decoding taken from [here](http://stackoverflow.com/questions/8125507/how-can-i-send-and-receive-websocket-messages-on-the-server-side)
 - [ws client](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 - [ws server](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers)

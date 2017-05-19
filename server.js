@@ -14,7 +14,6 @@ const http = require('http'),
 
 ws
   .on('connection', function(data, socket){ // data is null
-    this.emit('log', `${socket.id} connected`);
     this.replyOne(socket, 'initialData', {
       userlist: getUserlist(this.connections),
       messages: messages
