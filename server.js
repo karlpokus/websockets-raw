@@ -8,9 +8,7 @@ const http = require('http'),
       },
       ws = new wsServer(),
       messages = [],
-      getUserlist = function(arr) {
-        return arr.map(socket => socket.user);
-      };
+      getUserlist = sockets => sockets.map(socket => socket.user.name);
 
 ws
   .on('connection', function(data, socket){ // data is null
@@ -24,7 +22,7 @@ ws
   })
   .on('addMessage', function(data, socket) {
     var payload = {
-      user: socket.user,
+      user: socket.user.name,
       msg: data.msg
     };
 
@@ -32,7 +30,7 @@ ws
     this.replyAll('messageAdded', payload);
   })
   .on('updateUser', function(data, socket){
-    socket.user = data.user;
+    socket.user.name = data.user;
     this.replyAll('userlist', {userlist: getUserlist(this.connections)});
   });
 

@@ -15,7 +15,7 @@ Eventemitter pattern for server and client i.e register event listeners with `on
 - [x] userlist and messages on new connection
 - [x] addMessage
 - [x] updateUser
-- [ ] read up on heartbeats ping/pong
+- [x] heartbeats (not via opcode in frame)
 - [ ] decode connection ended from client
 - [ ] handle connection close on client
 - [ ] monitor `socket.bufferSize`
