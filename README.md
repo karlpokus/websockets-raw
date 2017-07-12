@@ -20,6 +20,7 @@ Eventemitter pattern for server and client i.e register event listeners with `on
 - [ ] handle connection close on client
 - [ ] monitor `socket.bufferSize`
 - [ ] consistent payloads
+- [x] call end on socket on event end
 
 # usage
 ```bash
