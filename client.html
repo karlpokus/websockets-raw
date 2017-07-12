@@ -29,13 +29,13 @@
     this.ws.onclose = this._emitEventByType.bind(this);
     this.ws.onmessage = this._onmessage.bind(this);
   }
-  
+
   wsClient.prototype._emitEventByType = function(e) {
     if (this.router[e.type]) {
       this.router[e.type](e);
     }
   }
-  
+
   wsClient.prototype._onmessage = function (e) {
     var data = JSON.parse(e.data);
 
@@ -144,7 +144,7 @@
     },
     created: function() {
       var self = this;
-      this.ws = new wsClient('wss://hej-node-karlpokus.c9users.io'); // 'ws://localhost:3000'
+      this.ws = new wsClient('ws://localhost:3000');
       this.ws
         .on('open', function(e) {
           self.status = 'connected';
