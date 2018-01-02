@@ -2,7 +2,7 @@
 Fiddling with the websocket protocol. No dependencies. A work in progress.
 
 ### api
-Eventemitter pattern for server and client i.e register event listeners with `on` and `emit` them with data.
+Event emitter pattern for server and client i.e register event listeners with `on` and `emit` them with data.
 
 # todos
 - [x] ws handshake (Note: the server handshake response requires an empty line in the end. Only 4+ hours debugging. Good times!)
@@ -15,12 +15,12 @@ Eventemitter pattern for server and client i.e register event listeners with `on
 - [x] userlist and messages on new connection
 - [x] addMessage
 - [x] updateUser
-- [x] heartbeats (not via opcode in frame)
-- [ ] decode connection ended from client
-- [ ] handle connection close on client
+- [x] heartbeats via pings and pongs in opcode as opposed to payload event
 - [ ] monitor `socket.bufferSize`
-- [ ] consistent payloads
 - [x] call end on socket on event end
+- [x]	option to end connection on client
+- [ ] send binary data in control frame
+- [ ] check FIN for continuation
 
 # usage
 ```bash
@@ -33,6 +33,7 @@ $ node server.js
 - js implementation of data frame encoding/decoding taken from [here](http://stackoverflow.com/questions/8125507/how-can-i-send-and-receive-websocket-messages-on-the-server-side)
 - [ws client](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_client_applications)
 - [ws server](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers)
+- [npm ws tests](https://github.com/karlpokus/ws/blob/master/test/Receiver.test.js)
 
 # license
 MIT
