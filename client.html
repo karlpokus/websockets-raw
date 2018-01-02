@@ -61,6 +61,15 @@
     return this;
   }
 
+	wsClient.prototype.die = function() {
+		this.ws.close();
+
+		// binary test
+		//this.ws.binaryType = 'arraybuffer';
+		//const a = new Float32Array('wo hoo');
+		//this.ws.send(a);
+	}
+
   // ***
   // vue
   // ***
@@ -70,6 +79,7 @@
       <div>
         <input type="text" placeholder="name" v-model="user" @keyup.enter="updateUser">
         <input type="text" placeholder="msg" v-model="msg" @keyup.enter="addMessage">
+				<button v-on:click="death">End session</button>
       </div>
     `,
     data: function() {
@@ -85,7 +95,10 @@
       addMessage: function(e) {
         this.$emit('addMessage', e.target.value);
         this.msg = '';
-      }
+      },
+			death: function(e) {
+				this.$emit('death');
+			}
     }
   };
 
@@ -118,7 +131,7 @@
     template: `<div>
       <h1>/chat</h1>
       <p class="robotext">status: {{status}}</p>
-      <inputs @updateUser="updateUser" @addMessage="addMessage"></inputs>
+      <inputs @updateUser="updateUser" @addMessage="addMessage" @death="death"></inputs>
       <users :userlist="userlist"></users>
       <msgs :messages="messages"></msgs>
     </div>`,
@@ -140,11 +153,15 @@
       },
       addMessage: function(msg) {
         this.ws.emit('addMessage', {msg: msg});
-      }
+      },
+			death: function() {
+				this.ws.die();
+			}
     },
     created: function() {
       var self = this;
       this.ws = new wsClient('ws://localhost:3000');
+
       this.ws
         .on('open', function(e) {
           self.status = 'connected';
