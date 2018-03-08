@@ -3,11 +3,11 @@ const http = require('http'),
       fs = require('fs'),
       server = http.createServer(),
       wsServer = require('./lib/ws-server'),
-      sendClient = (req, res) => {
-        fs.createReadStream('./client.html').pipe(res);
-      },
       ws = new wsServer(),
       messages = [],
+			sendFile = (filepath, res) => {
+				fs.createReadStream('.' + filepath).pipe(res);
+			}
       getUserlist = sockets => sockets.map(socket => socket.user.name);
 
 ws
@@ -35,6 +35,17 @@ ws
   });
 
 server
-  .on('request', sendClient)
+  .on('request', (req, res) => {
+		if (req.url === '/') {
+			sendFile('/static/client.html', res);
+
+		} else if (/static/.test(req.url)) {
+			sendFile(req.url, res);
+
+		} else {
+			res.writeHead(404);
+			res.end();
+		}
+	})
   .on('upgrade', ws.upgrade.bind(ws))
   .listen(PORT, () => {console.log('listening..')});
