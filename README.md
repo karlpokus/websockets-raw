@@ -1,8 +1,58 @@
 # websockets-raw
-Fiddling with the websocket protocol. No dependencies. A work in progress.
+Fiddling with the websocket protocol. A basic event emitter pattern for server and client passing json. No dependencies. A constant work in progress.
 
-### api
-Event emitter pattern for server and client i.e register event listeners with `on` and `emit` them with data.
+# usage
+### client
+```js
+// assuming the server is listening on port 3000
+ws = new wsClient('ws://localhost:3000');
+```
+Add event listeners for events from server or client built-ins with a chainable `on`. Listeners will be passed server data and have the ws instance as `this`.
+
+client built-in events
+- `ready` emitted on client after connection to server is made. A `connection` event is triggered before this.
+- `reconnecting` emitted before client reconnection attempt.
+- `reconnectionFail` emitted after reconnection failure. The client is dead at this point. Reload.
+
+```js
+ws.on('ready', () => app.status = 'connected') // built-in
+	.on('initialData', data => { // custom
+		app.userlist = data.userlist;
+		app.messages = data.messages;
+	});
+// emit arbitrary events and pass some data
+ws.emit('updateUser', {user: 'user'});
+```
+### server
+```js
+const httpServer = http.createServer();
+const wsServer = require('./lib/ws-server');
+const ws = new wsServer();
+```
+Like on the client - add event listeners for client events or server built-ins. Listeners will be passed client data and the client socket and have the ws instance as `this`. All sockets are stored in memory in the connections array on the instance. Each socket object also has the properties `name` and `id`. Reply one client with `replyOne` and all of them with `replyAll`.
+
+server built-in events
+- `connection` fired after client connected
+- `log` emitted here and there. Listen if your curious.
+
+```js
+ws.on('connection', function(data, socket){ // built-in
+	this.replyOne(socket, 'initialData', {
+		userlist: getUserlist(this.connections),
+		messages: messages
+	});
+})
+// listen on the upgrade event
+httpServer.on('upgrade', ws.upgrade.bind(ws));
+```
+note: it's entirely optional to for client or server to listen for events. They will be emitted regardless.
+
+start server
+```bash
+$ node server.js
+```
+### client reconnection
+The server will send an `end` event for all connected clients on `SIGINT`. This enables client to reconnect on the end event. Default is 3 reconnection attempts.
 
 # todos
 - [x] ws handshake (Note: the server handshake response requires an empty line in the end. Only 4+ hours debugging. Good times!)
@@ -20,12 +70,10 @@ Event emitter pattern for server and client i.e register event listeners with `o
 - [x] call end on socket on event end
 - [x]	option to end connection on client
 - [ ] send binary data in control frame
-- [ ] check FIN for continuation
-
-# usage
-```bash
-$ node server.js
-```
+- [ ] check FIN for continuation frame
+- [x] add client reconnect on socket end
+- [ ] add new sockets by id as key in connections object
+- [ ] try cluster and pm2 reloads
 
 # refs
 - [the websockets protocol rfc6455](https://tools.ietf.org/html/rfc6455)
