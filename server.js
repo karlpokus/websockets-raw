@@ -36,10 +36,10 @@ ws
 
 server
   .on('request', (req, res) => {
-		if (req.url === '/') {
+		if (req.url === '/') { // root html
 			sendFile('/static/client.html', res);
 
-		} else if (/static/.test(req.url)) {
+		} else if (/static/.test(req.url)) { // static files
 			sendFile(req.url, res);
 
 		} else {
