@@ -66,7 +66,7 @@ var app = new Vue({
 	},
 	data: function(){
 		return {
-			status: 'connecting',
+			status: '',
 			userlist: [],
 			messages: []
 		}
@@ -83,26 +83,28 @@ var app = new Vue({
 		}
 	},
 	created: function() {
-		var self = this;
+		this.status = 'connecting';
 		this.ws = new wsClient('ws://localhost:3000');
 
 		this.ws
-			.on('open', function(e) {
-				self.status = 'connected';
-				this.emit('connection', null);
-			})
-			.on('close', function(e){
-				self.status = 'closed';
-			})
-			.on('initialData', function(data){
-				self.userlist = data.userlist;
-				self.messages = data.messages;
-			})
-			.on('messageAdded', function(data){
-				self.messages.push(data);
-			})
-			.on('userlist', function(data){
-				self.userlist = data.userlist;
-			});
+			.on('ready', () => app.status = 'connected') // built-in
+			.on('reconnecting', () => app.status = 'reconnecting') // built-in
+			.on('reconnectionFail', () => app.status = 'failed') // built-in
+			.on('initialData', onInitialData) // custom
+			.on('messageAdded', onMessageAdded) // custom
+			.on('userlist', onUserList) // custom
 	}
 });
+
+function onInitialData(data) {
+	app.userlist = data.userlist;
+	app.messages = data.messages;
+}
+
+function onMessageAdded(data) {
+	app.messages.push(data);
+}
+
+function onUserList(data) {
+	app.userlist = data.userlist;
+}

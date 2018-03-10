@@ -1,10 +1,8 @@
 function wsClient(url) {
 	this.router = {};
-	this.ws = new WebSocket(url);
-	this.ws.onopen = this._emitEventByType.bind(this);
-	this.ws.onerror = this._emitEventByType.bind(this);
-	this.ws.onclose = this._emitEventByType.bind(this);
-	this.ws.onmessage = this._onmessage.bind(this);
+	this.url = url;
+
+	this._connectWebsocket.call(this);
 }
 
 wsClient.prototype._emitEventByType = function(e) {
@@ -34,6 +32,44 @@ wsClient.prototype.emit = function(e, payload) {
 	return this;
 }
 
-wsClient.prototype.die = function() {
+wsClient.prototype.die = function(){
 	this.ws.close();
+}
+
+wsClient.prototype._internalEmit = function(event) {
+	if (this.router[event]){
+		this.router[event]();
+	}
+}
+
+wsClient.prototype._makeConnection = function(success, fail) {
+	this.ws = new WebSocket(this.url);
+	this.ws.onopen = success.bind(this);
+	this.ws.onerror = this._emitEventByType.bind(this);
+	this.ws.onclose = fail.bind(this);
+	this.ws.onmessage = this._onmessage.bind(this);
+}
+
+wsClient.prototype._fails = 0;
+
+wsClient.prototype._connectWebsocket = function() {
+	var maxFails = 3;
+
+	var success = function() {
+		this._fails = 0;
+		this.emit.call(this, 'connection', null);
+		this._internalEmit.call(this, 'ready');
+	}
+
+	var reconnect = function() {
+		this._fails++;
+		this._internalEmit.call(this, 'reconnecting');
+		setTimeout(this._connectWebsocket.bind(this), 2000); // wait a bit
+	}
+
+	if (this._fails < maxFails) {
+		this._makeConnection.call(this, success.bind(this), reconnect.bind(this));
+	} else {
+		this._internalEmit.call(this, 'reconnectionFail');
+	}
 }
