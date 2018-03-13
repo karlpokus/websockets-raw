@@ -1,21 +1,16 @@
 var inputs = {
 	template: `
 		<div>
-			<input type="text" placeholder="name" v-model="user" @keyup.enter="updateUser">
 			<input type="text" placeholder="msg" v-model="msg" @keyup.enter="addMessage">
 			<button v-on:click="death">End session</button>
 		</div>
 	`,
 	data: function() {
 		return {
-			msg: '',
-			user: ''
+			msg: ''
 		}
 	},
 	methods: {
-		updateUser: function(e) {
-			this.$emit('updateUser', e.target.value);
-		},
 		addMessage: function(e) {
 			this.$emit('addMessage', e.target.value);
 			this.msg = '';
@@ -54,8 +49,9 @@ var app = new Vue({
 	el: '#app',
 	template: `<div>
 		<h1>/chat</h1>
-		<p class="robotext">status: {{status}}</p>
-		<inputs @updateUser="updateUser" @addMessage="addMessage" @death="death"></inputs>
+		<p class="robotext">status: {{ status }}</p>
+		<p class="robotext">name: {{ username }}</p>
+		<inputs @addMessage="addMessage" @death="death"></inputs>
 		<users :userlist="userlist"></users>
 		<msgs :messages="messages"></msgs>
 	</div>`,
@@ -67,14 +63,12 @@ var app = new Vue({
 	data: function(){
 		return {
 			status: '',
+			username: '',
 			userlist: [],
 			messages: []
 		}
 	},
 	methods: {
-		updateUser: function(user) {
-			this.ws.emit('updateUser', {user: user});
-		},
 		addMessage: function(msg) {
 			this.ws.emit('addMessage', {msg: msg});
 		},
@@ -92,13 +86,12 @@ var app = new Vue({
 			.on('reconnectionFail', () => app.status = 'failed') // built-in
 			.on('initialData', onInitialData) // custom
 			.on('messageAdded', onMessageAdded) // custom
-			.on('userlist', onUserList) // custom
+			.on('userlist', onUserList) // built-in event from server
 	}
 });
 
 function onInitialData(data) {
-	app.userlist = data.userlist;
-	app.messages = data.messages;
+	app.username = data.username;
 }
 
 function onMessageAdded(data) {

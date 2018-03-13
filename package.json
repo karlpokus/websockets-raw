@@ -4,7 +4,8 @@
   "description": "websockets for all",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "pm2 start pm2.config.js",
+    "stop": "pm2 delete all"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/karlpokus/websockets-raw/issues"
   },
-  "homepage": "https://github.com/karlpokus/websockets-raw#readme"
+  "homepage": "https://github.com/karlpokus/websockets-raw#readme",
+  "dependencies": {
+    "redis": "^2.8.0"
+  }
 }

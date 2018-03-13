@@ -1,5 +1,5 @@
 # websockets-raw
-Fiddling with the websocket protocol. A basic event emitter pattern for server and client passing json. No dependencies. A constant work in progress.
+Fiddling with the websocket protocol. Interface is an event emitter pattern for server and client passing json. No dependencies. A constant work in progress. Clustering requires redis pub/sub.
 
 # usage
 ### client
@@ -13,6 +13,7 @@ client built-in events
 - `ready` emitted on client after connection to server is made. A `connection` event is triggered before this.
 - `reconnecting` emitted before client reconnection attempt.
 - `reconnectionFail` emitted after reconnection failure. The client is dead at this point. Reload.
+- `userlist` a complete userlist. Emitted from server on each new user
 
 ```js
 ws.on('ready', () => app.status = 'connected') // built-in
@@ -54,6 +55,10 @@ $ node server.js
 ### client reconnection
 The server will send an `end` event for all connected clients on `SIGINT`. This enables client to reconnect on the end event. Default is 3 reconnection attempts.
 
+### persistance
+- `messages` are transient and not queued
+- `users` are stored in redis.
+
 # todos
 - [x] ws handshake (Note: the server handshake response requires an empty line in the end. Only 4+ hours debugging. Good times!)
 - [x] decode data frames from client
@@ -73,7 +78,9 @@ The server will send an `end` event for all connected clients on `SIGINT`. This 
 - [ ] check FIN for continuation frame
 - [x] add client reconnect on socket end
 - [ ] add new sockets by id as key in connections object
-- [ ] try cluster and pm2 reloads
+- [x] try cluster and pm2 reloads
+- [ ] webpack?
+- [ ] add dm
 
 # refs
 - [the websockets protocol rfc6455](https://tools.ietf.org/html/rfc6455)

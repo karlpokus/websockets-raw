@@ -4,34 +4,28 @@ const http = require('http'),
       server = http.createServer(),
       wsServer = require('./lib/ws-server'),
       ws = new wsServer(),
-      messages = [],
+			log = require('./lib/log'),
 			sendFile = (filepath, res) => {
 				fs.createReadStream('.' + filepath).pipe(res);
-			}
-      getUserlist = sockets => sockets.map(socket => socket.user.name);
+			};
 
 ws
   .on('connection', function(data, socket){ // data is null
-    this.replyOne(socket, 'initialData', {
-      userlist: getUserlist(this.connections),
-      messages: messages
-    });
+		this.replyOne(socket, 'initialData', {
+			username: socket.user.id
+		});
   })
   .on('log', function(...args){
-    console.log(args.join(' '));
+    log(args.join(' '));
   })
-  .on('addMessage', function(data, socket) {
-    var payload = {
-      user: socket.user.name,
-      msg: data.msg
-    };
-
-    messages.push(payload);
-    this.replyAll('messageAdded', payload);
-  })
-  .on('updateUser', function(data, socket){
-    socket.user.name = data.user;
-    this.replyAll('userlist', {userlist: getUserlist(this.connections)});
+	.on('error', function(err, socket){
+		log(`error ${ err } on ${ socket.user.id }`);
+	})
+  .on('addMessage', function(data, from) {
+		this.replyAll('messageAdded', {
+			user: from,
+			msg: data.msg
+		});
   });
 
 server
@@ -48,4 +42,4 @@ server
 		}
 	})
   .on('upgrade', ws.upgrade.bind(ws))
-  .listen(PORT, () => {console.log('listening..')});
+  .listen(PORT, () => { log('http running')});
