@@ -50,7 +50,10 @@ note: it's entirely optional to for client or server to listen for events. They 
 
 start server
 ```bash
-$ node server.js
+# run standard
+$ npm start
+# run with appdynamics monitoring enabled. requires a license
+$ npm run startmonit
 ```
 ### client reconnection
 The server will send an `end` event for all connected clients on `SIGINT`. This enables client to reconnect on the end event. Default is 3 reconnection attempts.
