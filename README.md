@@ -3,6 +3,8 @@ Fiddling with the websocket protocol. Interface is an event emitter pattern for 
 
 # usage
 ### client
+browser
+
 ```js
 // assuming the server is listening on port 3000
 ws = new wsClient('ws://localhost:3000');
@@ -24,6 +26,13 @@ ws.on('ready', () => app.status = 'connected') // built-in
 // emit arbitrary events and pass some data
 ws.emit('updateUser', {user: 'user'});
 ```
+
+client cli
+
+```bash
+$ ./lib/cli-ws-client.js
+```
+
 ### server
 ```js
 const httpServer = http.createServer();
