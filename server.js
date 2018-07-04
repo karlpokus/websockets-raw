@@ -1,9 +1,9 @@
-const http = require('http'),
-      PORT = process.env.PORT || 3000,
+const PORT = process.env.PORT || 3000,
       fs = require('fs'),
-      server = http.createServer(),
-      wsServer = require('./lib/ws-server'),
+			wsServer = require('./lib/ws-server'),
       ws = new wsServer(),
+			http = require('http'),
+      server = http.createServer(),
 			log = require('./lib/log'),
 			sendFile = (filepath, res) => {
 				fs.createReadStream('.' + filepath).pipe(res);
